@@ -1,0 +1,506 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Floatie - API",
+        "version": "1.0",
+        "contact": {
+            "name": "Floatie",
+            "url": "https://floatie.io",
+            "email": "info@floatie.io"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080/api",
+            "description": "Localhost"
+        }
+    ],
+    "paths": {
+        "/buildings": {
+            "parameters": [],
+            "post": {
+                "summary": "constructBuilding",
+                "operationId": "constructBuilding",
+                "description": "Construct a new building.",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/constructBuilding"
+                },
+                "tags": [
+                    "Building"
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/OK"
+                    }
+                }
+            },
+            "get": {
+                "summary": "getBuildings",
+                "operationId": "getBuildings",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/Buildings"
+                    }
+                },
+                "description": "Get all the buildings.",
+                "parameters": [],
+                "tags": [
+                    "Building"
+                ]
+            }
+        },
+        "/buildings/{buildingUuid}": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/buildingUuidPath"
+                }
+            ],
+            "get": {
+                "summary": "getBuilding",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/Building"
+                    }
+                },
+                "operationId": "getBuilding",
+                "parameters": [],
+                "tags": [
+                    "Building"
+                ],
+                "description": "Get one building."
+            }
+        },
+        "/buildings/{buildingUuid}/floors": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/buildingUuidPath"
+                }
+            ],
+            "post": {
+                "summary": "constructFloor",
+                "operationId": "constructFloor",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/OK"
+                    }
+                },
+                "description": "Construct a new floor.",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/constructFloor"
+                },
+                "tags": [
+                    "Floor"
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Building": {
+                "title": "Building",
+                "x-stoplight": {
+                    "id": "ze7sx7xr00ljk"
+                },
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "street": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "string"
+                    },
+                    "bus": {
+                        "type": "string"
+                    },
+                    "floors": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/components/schemas/Floor"
+                        }
+                    },
+                    "connections": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Connection"
+                        }
+                    }
+                },
+                "required": [
+                    "uuid",
+                    "name",
+                    "street",
+                    "number"
+                ]
+            },
+            "Floor": {
+                "title": "Floor",
+                "x-stoplight": {
+                    "id": "goh0x40npady1"
+                },
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "integer"
+                    },
+                    "hallways": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/components/schemas/Hallway"
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/components/schemas/Room"
+                        }
+                    }
+                },
+                "required": [
+                    "uuid",
+                    "name",
+                    "number"
+                ]
+            },
+            "Hallway": {
+                "title": "Hallway",
+                "x-stoplight": {
+                    "id": "qi8iirv8onkpq"
+                },
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "hallways": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/components/schemas/Hallway"
+                        }
+                    },
+                    "rooms": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "$ref": "#/components/schemas/Room"
+                        }
+                    }
+                },
+                "required": [
+                    "uuid",
+                    "name",
+                    "hallways",
+                    "rooms"
+                ]
+            },
+            "Room": {
+                "title": "Room",
+                "x-stoplight": {
+                    "id": "9qj3fjbunmnhy"
+                },
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "uuid",
+                    "name"
+                ]
+            },
+            "Connection": {
+                "title": "Connection",
+                "x-stoplight": {
+                    "id": "vr7zgqmatmadu"
+                },
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "escalator",
+                            "stairway"
+                        ]
+                    },
+                    "connects": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "format": "uri-reference"
+                        }
+                    }
+                },
+                "required": [
+                    "uuid",
+                    "type",
+                    "connects"
+                ]
+            }
+        },
+        "requestBodies": {
+            "constructBuilding": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Building"
+                        },
+                        "examples": {
+                            "example-1": {
+                                "value": {
+                                    "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                                    "name": "string",
+                                    "street": "string",
+                                    "number": "string",
+                                    "bus": "string",
+                                    "floors": [
+                                        {
+                                            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                                            "name": "string",
+                                            "hallways": [
+                                                {
+                                                    "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                                                    "name": "string",
+                                                    "hallways": [
+                                                        {}
+                                                    ],
+                                                    "rooms": [
+                                                        {
+                                                            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                                                            "name": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "rooms": [
+                                                {
+                                                    "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                                                    "name": "string"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "constructFloor": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Floor"
+                        }
+                    }
+                }
+            },
+            "constructHallway": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Hallway"
+                        }
+                    }
+                }
+            },
+            "constructRoom": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Room"
+                        }
+                    }
+                }
+            },
+            "constructConnection": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Connection"
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "Building": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Building"
+                        }
+                    }
+                }
+            },
+            "Buildings": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Building"
+                            }
+                        }
+                    }
+                }
+            },
+            "Floor": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Floor"
+                        }
+                    }
+                }
+            },
+            "Floors": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Floor"
+                            }
+                        }
+                    }
+                }
+            },
+            "Hallway": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Hallway"
+                        }
+                    }
+                }
+            },
+            "Hallways": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Hallway"
+                            }
+                        }
+                    }
+                }
+            },
+            "Room": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Room"
+                        }
+                    }
+                }
+            },
+            "Rooms": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Room"
+                            }
+                        }
+                    }
+                }
+            },
+            "Connection": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Connection"
+                        }
+                    }
+                }
+            },
+            "Connections": {
+                "description": "Example response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Connection"
+                            }
+                        }
+                    }
+                }
+            },
+            "OK": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "buildingUuidPath": {
+                "name": "buildingUuid",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "description": "The uuid of a building."
+            },
+            "buildingUuidQuery": {
+                "name": "buildingUuid",
+                "in": "query",
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "description": "The uuid of a building.",
+                "allowEmptyValue": true
+            }
+        }
+    }
+}

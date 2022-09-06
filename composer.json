@@ -1,0 +1,16 @@
+{
+    "name": "arnedesmedt/api-platform-event-engine-server-stub",
+    "description": "Event Engine Api Platform PHP Server generator based on an OpenApi spec.",
+    "homepage": "https://github.com/arnedesmedt/api-platfomr-event-engine-server-stub",
+    "keywords": [
+        "openapi",
+        "server",
+        "generator"
+    ],
+    "type": "library",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "bin": [
+        "resources/dev/eee-api-php-server.sh"
+    ]
+}
