@@ -6,7 +6,7 @@ set -euo pipefail
 #GEN_DIR=${GEN_DIR:-/opt/openapi-generator}
 JAVA_OPTS=${JAVA_OPTS:-"-Xmx1024M -DloggerPath=conf/log4j.properties"}
 classPath=$(find $OPENAPI_GEN_JARS_DIR -name *.jar -print0 |  tr '\0' ':' | head -c -1)
-#echo $classPath
+echo $classPath
 #cli="${GEN_DIR}/modules/openapi-generator-cli"
 codegen="org.openapitools.codegen.OpenAPIGenerator"
 

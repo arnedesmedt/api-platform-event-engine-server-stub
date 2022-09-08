@@ -1,14 +1,10 @@
 FROM jimschubert/8-jdk-alpine-mvn:2.0 as builder
 
 WORKDIR /build
-COPY pom.xml /build
-RUN mvn verify clean --fail-never
-
 COPY . /build/
-RUN mvn package
+RUN --mount=type=cache,target=/root/.m2 mvn -f /build/pom.xml clean package
 
-
-FROM openapitools/openapi-generator-cli:v6.1.0 as runner
+FROM openapitools/openapi-generator-cli:v6.0.1 as runner
 
 ENV OPENAPI_GEN_ROOT_DIR /opt/openapi-generator
 ENV OPENAPI_GEN_JARS_DIR ${OPENAPI_GEN_ROOT_DIR}/jars

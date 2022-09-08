@@ -1,0 +1,62 @@
+<?php
+{{#operations}}{{#operation}}
+namespace {{importPath}};
+
+use ADS\Bundle\ApiPlatformEventEngineBundle\Message\ApiPlatformMessage;
+use ADS\Bundle\ApiPlatformEventEngineBundle\Message\DefaultApiPlatformMessage;
+use ADS\Bundle\ApiPlatformEventEngineBundle\Message\OperationNameIsMessageName;
+use ADS\Bundle\EventEngineBundle\Response\DefaultResponses;
+use ADS\Bundle\EventEngineBundle\Response\HasResponses;
+{{#vendorExtensions.isQuery}}use ADS\Bundle\EventEngineBundle\Query\DefaultQuery;
+use ADS\Bundle\EventEngineBundle\Query\Query;{{/vendorExtensions.isQuery}}{{#vendorExtensions.isControllerCommand}}use ADS\Bundle\EventEngineBundle\Command\ControllerCommand;
+use ADS\Bundle\EventEngineBundle\Command\DefaultControllerCommand;{{/vendorExtensions.isControllerCommand}}{{#vendorExtensions.isAggregateCommand}}use ADS\Bundle\EventEngineBundle\Command\AggregateCommand;
+use ADS\Bundle\EventEngineBundle\Command\DefaultAggregateCommand;{{/vendorExtensions.isAggregateCommand}}
+use Symfony\Component\HttpFoundation\Request;
+
+final class {{classVarName}} implements ApiPlatformMessage, HasResponses{{#vendorExtensions.isQuery}}, Query{{/vendorExtensions.isQuery}}{{#vendorExtensions.isControllerCommand}}, ControllerCommand{{/vendorExtensions.isControllerCommand}}{{#vendorExtensions.isAggregateCommand}}, AggregateCommand{{/vendorExtensions.isAggregateCommand}}
+{
+    use DefaultApiPlatformMessage;
+    use DefaultResponses;
+    {{#vendorExtensions.isQuery}}use DefaultQuery;{{/vendorExtensions.isQuery}}{{#vendorExtensions.isControllerCommand}}use DefaultControllerCommand;{{/vendorExtensions.isControllerCommand}}{{#vendorExtensions.isAggregateCommand}}use DefaultAggregateCommand;{{/vendorExtensions.isAggregateCommand}}
+    use OperationNameIsMessageName;
+
+{{#pathParams}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{paramName}};
+{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}    /** @var array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}> ${{name}} */
+{{/isArray}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{name}};
+{{/vars}}{{/bodyParams.0}}{{#pathParams}}
+    public function {{paramName}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
+    {
+        return $this->{{paramName}};
+    }
+{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}
+    /**
+     * @return array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}>
+     **/{{/isArray}}
+    public function {{getter}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
+    {
+        return $this->{{name}};
+    }
+{{/vars}}
+
+    /**
+     * @return array<string, string>
+     */
+    private static function arrayPropItemTypeMap(): array
+    {
+        return [{{#vars}}{{#isArray}}
+            '{{name}}' => {{^items.complexType}}'{{items.dataType}}'{{/items.complexType}}{{#items.complexType}}{{{.}}}::class{{/items.complexType}},{{/isArray}}{{/vars}}
+        ];
+    }
+{{/bodyParams.0}}
+
+    public static function __httpMethod(): string
+    {
+        return Request::METHOD_{{httpMethod}};
+    }
+
+    public static function __uriTemplate(): string
+    {
+        return '{{path}}';
+    }
+}
+{{/operation}}{{/operations}}

@@ -11,6 +11,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "bin": [
-        "resources/dev/eee-api-php-server.sh"
+        "resources/dev/ee-api-php-server.sh"
     ]
 }

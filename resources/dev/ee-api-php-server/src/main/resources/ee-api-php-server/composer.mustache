@@ -1,0 +1,47 @@
+{
+    "name": "{{gitUserId}}/{{gitRepoId}}",
+    {{#artifactVersion}}
+    "version": "{{.}}",
+    {{/artifactVersion}}
+    "description": "{{description}}",
+    "keywords": [
+        "openapi",
+        "api",
+        "event-engine",
+        "api-platform",
+        "symfony"
+    ],
+    {{#homePage}}
+    "homepage": "{{.}}",
+    {{/homePage}}
+    "authors": [
+        {
+            "name": "openapi-generator-server-stub",
+            "homepage": "https://github.com/arnedesmedt/api-platform-event-engine-server-stub"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "arnedesmedt/api-platform-event-engine-bundle": "~0.1"
+    },
+    "require-dev": {
+        "arnedesmedt/api-platform-event-engine-server-stub": "dev-master",
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "~3.0"
+    },
+    "repositories": {
+        "arnedesmedt/api-platform-event-engine-server-stub": {
+            "type": "path",
+            "url": "../../../php/packages/api-platform-event-engine-server-stub"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "{{escapedInvokerPackage}}\\" : "{{srcBasePath}}/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
