@@ -23,6 +23,7 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
     private Boolean aggregate = false;
     private Boolean events = false;
     private Boolean controller = false;
+    private String[] queryMethods = {"GET", "OPTIONS", "HEAD"};
 
     public EventEngineApiPhpServerGenerator() {
         super();
@@ -35,6 +36,9 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
 
         apiTemplateFiles.put("message.mustache", ".php");
         supportingFiles.add(new SupportingFile("composer.mustache", "", "composer.json"));
+        supportingFiles.add(new SupportingFile("grumphp.mustache", "", "grumphp.yml"));
+        supportingFiles.add(new SupportingFile("phpstan.mustache", "", "phpstan.neon"));
+        supportingFiles.add(new SupportingFile("phpcs.mustache", "", "phpcs.xml"));
 
         // Set template dir to ee-api-php-server
         this.setTemplateDir(EventEngineApiPhpServerGenerator.GENERATOR_NAME);
@@ -62,8 +66,7 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         if (additionalProperties.containsKey(CONTROLLER)) {
             this.controller = true;
             apiTemplateFiles = new HashMap<>();
-            apiTemplateFiles.put("controller.mustache", ".php");
-            apiTemplateFiles.put("resolver.mustache", ".php");
+            apiTemplateFiles.put("controllerResolver.mustache", ".php");
         }
     }
 
@@ -77,9 +80,20 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         return EventEngineApiPhpServerGenerator.GENERATOR_NAME;
     }
 
+    @Override
+    public String toGetter(String name) {
+        return name;
+    }
+
     // Rewrite the api names
     @Override
     public String toApiImport(String name) {
+        int lastIndex = name.lastIndexOf("/");
+
+        if (lastIndex == -1) {
+            return apiPackage() + "\\" + name;
+        }
+
         return apiPackage() + "\\" + name.replace("/", "\\").substring(0, name.lastIndexOf("/"));
     }
 
@@ -153,15 +167,18 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
                                           Operation operation,
                                           List<Server> servers) {
         CodegenOperation codegenOperation = super.fromOperation(path, httpMethod, operation, servers);
-        String[] queryMethods = {"GET", "OPTIONS", "HEAD"};
         Map<String, Object> vendorExtensions = codegenOperation.vendorExtensions;
-        Boolean isQuery = Arrays.stream(queryMethods).anyMatch(codegenOperation.httpMethod::equals);
-        Boolean isAggregate = vendorExtensions != null ? vendorExtensions.containsKey("x-aggregate") : false;
+        Boolean isQuery = this.isQuery(codegenOperation.httpMethod);
+        Boolean isController = vendorExtensions != null ? Boolean.TRUE.equals(vendorExtensions.get("x-controller")) : false;
         codegenOperation.vendorExtensions.put("isQuery", isQuery);
-        codegenOperation.vendorExtensions.put("isControllerCommand", ! isQuery && ! isAggregate);
-        codegenOperation.vendorExtensions.put("isAggregateCommand", ! isQuery && isAggregate);
+        codegenOperation.vendorExtensions.put("isControllerCommand", ! isQuery && isController);
+        codegenOperation.vendorExtensions.put("isAggregateCommand", ! isQuery && ! isController);
 
         return codegenOperation;
+    }
+
+    public Boolean isQuery(String method) {
+        return Arrays.stream(this.queryMethods).anyMatch(method.toUpperCase()::equals);
     }
 
     // Rewrite the tags to get files per operation
@@ -199,8 +216,14 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         Object aggregate = extensions.get("x-aggregate");
         final String aggregatePrefix = aggregate != null ? aggregate + "/" : "";
 
+        Object xFolder = extensions.get("x-folder");
+        final String folder = xFolder != null ? xFolder + "/" : "";
+
+        final Boolean isController = Boolean.TRUE.equals(extensions.get("x-controller"));
+        final Boolean isQuery = this.isQuery(method);
+
         if (this.aggregate) {
-            if (aggregate == null) {
+            if (aggregate == null || isController) {
                 return null;
             }
 
@@ -210,13 +233,10 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
             return operation;
         }
 
-        Object xFolder = extensions.get("x-folder");
-        final String folder = xFolder != null ? xFolder + "/" : "";
-
         if (this.events) {
-            Object eventsObject = extensions.get("x-events");
+            Object eventsObject = extensions.get("x-aggregate-events");
 
-            if (method == "Get" || eventsObject == null) {
+            if (isQuery || eventsObject == null) {
                 return null;
             }
 
@@ -226,7 +246,17 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
             return operation;
         }
 
-        String type = method == "Get" ? (this.controller ? "Resolver/" : "Query/") : (this.controller ? "Controller/" : "Command/");
+        String type = null;
+        if (this.controller) {
+            if (! isQuery && ! isController) {
+                return null;
+            }
+
+            type = isQuery ? "Resolver/" : "Controller/";
+        } else {
+            type = isQuery ? "Query/" : "Command/";
+        }
+
         ArrayList list = new ArrayList();
         list.add(aggregatePrefix + type + folder + StringUtils.camelize(operation.getOperationId()));
         operation.setTags(list);

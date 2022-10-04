@@ -1,10 +1,47 @@
 <?php
+{{#operations}}
 
 namespace {{importPath}};
 
-{{#operations}}
-final class {{classVarName}}
-{
+use ADS\Bundle\EventEngineBundle\Aggregate\AggregateRoot;
+use ADS\Bundle\EventEngineBundle\Aggregate\EventSourced;
+use EventEngine\JsonSchema\JsonSchemaAwareRecord;
+use EventEngine\Persistence\DeletableState;
+use ADS\Bundle\EventEngineBundle\Aggregate\DeletableAggregate;
+use {{importPath}}\Command;
+use {{importPath}}\Event;
 
+/** @implements AggregateRoot<JsonSchemaAwareRecord> */
+final class {{classVarName}} implements AggregateRoot, DeletableState
+{
+    /** @use EventSourced<JsonSchemaAwareRecord> */
+    use EventSourced;
+    use DeletableAggregate;{{#operation}}{{#vendorExtensions.isAggregateCommand}}{{#bodyParams.0.content.application/json.schema.vendorExtensions.x-aggregate-state}}
+
+    /**
+     * @return class-string<JsonSchemaAwareRecord>
+     */
+    protected static function stateClass(): string
+    {
+        return {{{bodyParams.0.content.application/json.schema.complexType}}}::class;
+    }{{/bodyParams.0.content.application/json.schema.vendorExtensions.x-aggregate-state}}
+
+    public {{#vendorExtensions.x-aggregate-create}}static {{/vendorExtensions.x-aggregate-create}}function {{operationId}}(Command\{{operationIdCamelCase}} ${{operationId}}): {{#vendorExtensions.x-aggregate-create}}self{{/vendorExtensions.x-aggregate-create}}{{^vendorExtensions.x-aggregate-create}}void{{/vendorExtensions.x-aggregate-create}}
+    {
+        $payload = ${{operationId}}->toArray();{{#vendorExtensions.x-aggregate-create}}
+
+        $self = new self();{{/vendorExtensions.x-aggregate-create}}{{#vendorExtensions.x-aggregate-events}}
+        {{#vendorExtensions.x-aggregate-create}}$self{{/vendorExtensions.x-aggregate-create}}{{^vendorExtensions.x-aggregate-create}}$this{{/vendorExtensions.x-aggregate-create}}->recordThat(Event\{{.}}::fromArray($payload));{{/vendorExtensions.x-aggregate-events}}{{#vendorExtensions.x-aggregate-create}}
+
+        return $self;{{/vendorExtensions.x-aggregate-create}}
+    }{{/vendorExtensions.isAggregateCommand}}{{#vendorExtensions.x-aggregate-events}}
+
+    public function when{{.}}(Event\{{.}} ${{#lambda.camelcase}}{{.}}{{/lambda.camelcase}}): void
+    {
+        $payload = ${{#lambda.camelcase}}${{.}}{{/lambda.camelcase}}->toArray();{{#vendorExtensions.x-aggregate-create}}
+        /** @var class-string<JsonSchemaAwareRecord> $stateClass */
+        $stateClass = static::stateClass();{{/vendorExtensions.x-aggregate-create}}
+        $this->state = {{#vendorExtensions.x-aggregate-create}}$stateClass::fromArray{{/vendorExtensions.x-aggregate-create}}{{^vendorExtensions.x-aggregate-create}}$this->state()->with{{/vendorExtensions.x-aggregate-create}}($payload);
+    }{{/vendorExtensions.x-aggregate-events}}{{/operation}}
 }
 {{/operations}}

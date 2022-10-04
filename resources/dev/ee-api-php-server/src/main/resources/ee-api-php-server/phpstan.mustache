@@ -1,0 +1,11 @@
+parameters:
+    level: max
+    paths:
+        - src
+    ignoreErrors:
+        - '#^Static method (.*)::arrayPropItemTypeMap\(\) is unused.$#'
+services:
+	-
+		class: ADS\JsonImmutableObjects\PhpStan\PropertiesExtension
+		tags:
+			- phpstan.properties.readWriteExtension

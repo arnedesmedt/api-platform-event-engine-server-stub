@@ -57,6 +57,11 @@ final class {{classVarName}} implements ApiPlatformMessage, HasResponses{{#vendo
     public static function __uriTemplate(): string
     {
         return '{{path}}';
-    }
+    }{{#vendorExtensions.isAggregateCommand}}
+
+    public function __aggregateId(): string
+    {
+        return $this->{{bodyParams.0.vars.0.getter}}(){{#bodyParams.0.vars.0.complexType}}->toString(){{/bodyParams.0.vars.0.complexType}};
+    }{{/vendorExtensions.isAggregateCommand}}
 }
 {{/operation}}{{/operations}}

@@ -1,10 +1,39 @@
 <?php
-{{#models}}
+{{#models}}{{#model}}
+namespace {{modelPackage}}{{#vendorExtensions}}{{#x-folder}}\{{.}}{{/x-folder}}{{#x-aggregate}}\{{.}}{{/x-aggregate}}{{/vendorExtensions}}\Model;
 
-namespace {{modelPackage}}{{#model}}{{#vendorExtensions}}{{#x-folder}}\{{.}}{{/x-folder}}{{#x-aggregate}}\{{.}}{{/x-aggregate}}{{/vendorExtensions}}{{/model}}\Model;
+use ADS\JsonImmutableObjects\JsonSchemaAwareRecordLogic;
+use EventEngine\JsonSchema\JsonSchemaAwareRecord;
+{{#vendorExtensions.x-aggregate-state}}
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
 
-final class {{classname}}
+#[ApiResource()]{{/vendorExtensions.x-aggregate-state}}
+final class {{classname}} implements JsonSchemaAwareRecord
 {
+    use JsonSchemaAwareRecordLogic;
 
+{{#vars}}{{#isArray}}    /** @var array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}> ${{name}} */
+{{/isArray}}{{#vendorExtensions.x-aggregate-id}}    #[ApiProperty(identifier:true)]
+{{/vendorExtensions.x-aggregate-id}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{name}};
+{{/vars}}{{#vars}}{{#isArray}}
+    /**
+     * @return array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}>
+     **/{{/isArray}}
+    public function {{getter}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
+    {
+        return $this->{{name}};
+    }
+{{/vars}}
+
+    /**
+     * @return array<string, string>
+     */
+    private static function arrayPropItemTypeMap(): array
+    {
+        return [{{#vars}}{{#isArray}}
+            '{{name}}' => {{^items.complexType}}'{{items.dataType}}'{{/items.complexType}}{{#items.complexType}}{{{.}}}::class{{/items.complexType}},{{/isArray}}{{/vars}}
+        ];
+    }
 }
-{{/models}}
+{{/model}}{{/models}}

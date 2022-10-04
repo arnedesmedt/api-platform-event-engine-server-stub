@@ -1,0 +1,14 @@
+<?php
+{{#operations}}{{#operation}}
+namespace {{importPath}};
+
+use {{modelPackage}}\{{vendorExtensions.x-aggregate}}\{{#vendorExtensions.isQuery}}Query{{/vendorExtensions.isQuery}}{{^vendorExtensions.isQuery}}Command{{/vendorExtensions.isQuery}};
+
+final class {{classVarName}}
+{
+    public function __invoke({{#vendorExtensions.isQuery}}Query{{/vendorExtensions.isQuery}}{{^vendorExtensions.isQuery}}Command{{/vendorExtensions.isQuery}}\{{classVarName}} ${{operationId}}): mixed
+    {
+        return ${{operationId}};
+    }
+}
+{{/operation}}{{/operations}}

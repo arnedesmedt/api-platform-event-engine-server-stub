@@ -1,10 +1,44 @@
 <?php
-
+{{#operations}}{{#operation}}
 namespace {{importPath}};
 
-{{#operations}}
-final class {{classVarName}}
-{
+use ADS\Bundle\EventEngineBundle\Event\DefaultEvent;
+use ADS\Bundle\EventEngineBundle\Event\Event;
+use ADS\JsonImmutableObjects\JsonSchemaAwareRecordLogic;
+use EventEngine\JsonSchema\JsonSchemaAwareRecord;
 
+final class {{classVarName}} implements Event, JsonSchemaAwareRecord
+{
+    use JsonSchemaAwareRecordLogic;
+    use DefaultEvent;
+
+{{#pathParams}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{paramName}};
+{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}    /** @var array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}> ${{name}} */
+{{/isArray}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{name}};
+{{/vars}}{{/bodyParams.0}}{{#pathParams}}
+    public function {{paramName}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
+    {
+        return $this->{{paramName}};
+    }
+{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}
+    /**
+     * @return array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}>
+     **/{{/isArray}}
+    public function {{getter}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
+    {
+        return $this->{{name}};
+    }
+    {{/vars}}
+
+    /**
+     * @return array<string, string>
+     */
+    private static function arrayPropItemTypeMap(): array
+    {
+        return [{{#vars}}{{#isArray}}
+            '{{name}}' => {{^items.complexType}}'{{items.dataType}}'{{/items.complexType}}{{#items.complexType}}{{{.}}}::class{{/items.complexType}},{{/isArray}}{{/vars}}
+        ];
+    }
+{{/bodyParams.0}}
 }
-{{/operations}}
+{{/operation}}{{/operations}}

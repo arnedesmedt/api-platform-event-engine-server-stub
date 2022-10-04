@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="{{gitRepoId}}-coding-standard">
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".php_cs.cache"/>
+    <arg name="colors"/>
+
+    <!--Show progress of the run and show sniff names -->
+    <arg value="ps"/>
+
+    <!-- Directories to be checked -->
+    <file>src</file>
+    <file>tests</file>
+
+
+
+    <!-- Include Doctrine Coding Standard -->
+    <rule ref="Doctrine">
+<!--        <exclude name="SlevomatCodingStandard.PHP.RequireExplicitAssertion.RequiredExplicitAssertion"/>-->
+<!--        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>-->
+<!--        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification"/>-->
+<!--        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>-->
+<!--        <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming"/>-->
+<!--        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>-->
+    </rule>
+
+<!--    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>-->
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+<!--    <rule ref="Generic.NamingConventions.ConstructorName.OldStyle">-->
+<!--        <exclude-pattern>*/Domain/Entity/*/Controller/*.php</exclude-pattern>-->
+<!--        <exclude-pattern>*/Domain/Entity/*/Resolver/*.php</exclude-pattern>-->
+<!--    </rule>-->
+</ruleset>

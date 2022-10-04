@@ -29,31 +29,31 @@ docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-
                                                                -c /local/resources/api/config.json \
                                                                -t /local/resources/api/templates
 
-#docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
-#                                                               -i /local/resources/api/api-spec.yml \
-#                                                               -o /local/ \
-#                                                               -c /local/resources/api/config.json \
-#                                                               -t /local/resources/api/templates \
-#                                                               --additional-properties=controller=true \
-#                                                               --global-property=apis
-#
-#docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
-#                                                               -i /local/resources/api/api-spec.yml \
-#                                                               -o /local/ \
-#                                                               -c /local/resources/api/config.json \
-#                                                               -t /local/resources/api/templates \
-#                                                               --additional-properties=aggregate=true \
-#                                                               --global-property=apis
-#
-#docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
-#                                                               -i /local/resources/api/api-spec.yml \
-#                                                               -o /local/ \
-#                                                               -c /local/resources/api/config.json \
-#                                                               -t /local/resources/api/templates \
-#                                                               --additional-properties=events=true \
-#                                                               --global-property=apis
+docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
+                                                               -i /local/resources/api/api-spec.yml \
+                                                               -o /local/ \
+                                                               -c /local/resources/api/config.json \
+                                                               -t /local/resources/api/templates \
+                                                               --additional-properties=controller=true \
+                                                               --global-property=apis
 
-cd "${rootdir}" && sudo chown -R "$(id -u):$(id -g)" src
+docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
+                                                               -i /local/resources/api/api-spec.yml \
+                                                               -o /local/ \
+                                                               -c /local/resources/api/config.json \
+                                                               -t /local/resources/api/templates \
+                                                               --additional-properties=aggregate=true \
+                                                               --global-property=apis
+
+docker run --rm -v "${rootdir}":/local ${generatorimage} generate -g ee-api-php-server \
+                                                               -i /local/resources/api/api-spec.yml \
+                                                               -o /local/ \
+                                                               -c /local/resources/api/config.json \
+                                                               -t /local/resources/api/templates \
+                                                               --additional-properties=events=true \
+                                                               --global-property=apis
+
+cd "${rootdir}" && sudo chown -R "$(id -u):$(id -g)" src && composer install && find src -type f | xargs sed -z -i -e "s/\n\n    \/\*\*\n     \* \@return array<string, string>\n     \*\/\n    private static function arrayPropItemTypeMap(): array\n    {\n        return \[\n        \]\;\n    }//"
 
 if [ -x "${rootdir}/resources/scripts/after_run.sh" ]
 then
@@ -61,4 +61,4 @@ then
 fi
 
 # Exit code of phpcbf is 1 if all is fixed https://github.com/squizlabs/PHP_CodeSniffer/issues/2898
-#cd "${rootdir}" && (vendor/bin/phpcbf --extensions=php --report=full ./Client.php ./ClientMock.php ./ClientBuilder.php Model/ Endpoint/ || true)
+cd "${rootdir}" && (vendor/bin/phpcbf --extensions=php --report=full src || true)
