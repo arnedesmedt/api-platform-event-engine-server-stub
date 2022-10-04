@@ -39,6 +39,8 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         supportingFiles.add(new SupportingFile("grumphp.mustache", "", "grumphp.yml"));
         supportingFiles.add(new SupportingFile("phpstan.mustache", "", "phpstan.neon"));
         supportingFiles.add(new SupportingFile("phpcs.mustache", "", "phpcs.xml"));
+        supportingFiles.add(new SupportingFile("docker-compose.mustache", "", "docker-compose.yml"));
+        supportingFiles.add(new SupportingFile("docker.mustache", "", "DockerFile"));
 
         // Set template dir to ee-api-php-server
         this.setTemplateDir(EventEngineApiPhpServerGenerator.GENERATOR_NAME);

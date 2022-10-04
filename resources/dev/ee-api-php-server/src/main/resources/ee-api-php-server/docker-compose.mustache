@@ -1,0 +1,92 @@
+version: '3'
+services:
+    db:
+        image: postgres
+        ports:
+            - 5433:5432
+        expose:
+            - 5432
+        volumes:
+            - ./database/docker-scripts:/docker-entrypoint-initdb.d
+        environment:
+            POSTGRES_DB: {{docker.database.name}}
+            POSTGRES_USER: {{docker.database.username}}
+            POSTGRES_PASSWORD: {{docker.database.password}}
+        networks:
+            - {{docker.network}}
+
+    init:
+        build: ./
+        env_file:
+            - .env
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - db
+        networks:
+            - {{docker.network}}
+        working_dir: /var/www/
+        command: >
+            sh -c "
+                echo 'creating event streams' && php bin/console event-engine:event-streams:create -vvv &&
+                echo 'creating document stores' && php bin/console event-engine:document-stores:create -vvv &&
+                echo 'executing migrations' && php bin/console doctrine:migrations:migrate -vvv"
+
+    application:
+        build: ./
+        volumes:
+            - ./:/var/www
+        hostname: application-development
+        ports:
+            - 8001:8000
+        expose:
+            - 8000
+        depends_on:
+            - db
+        cap_add:
+            - SYS_PTRACE
+        networks:
+            - {{docker.network}}
+        command: symfony serve --allow-http --no-tls --dir=/var/www/
+        extra_hosts:
+            - host.docker.internal:host-gateway
+
+    docs:
+        image: squidfunk/mkdocs-material
+        volumes:
+            - ./:/docs
+        ports:
+            - 8002:8000
+        expose:
+            - 8000
+
+    open-api:
+        image: swaggerapi/swagger-ui
+        ports:
+            - 9001:8080
+        expose:
+            - 8080
+        environment:
+            URLS: "[ { url: \"http://0.0.0.0:8001/api/docs\", name: \"{{applicationName}}\" } ]"
+        networks:
+            - {{docker.network}}
+        extra_hosts:
+            - host.docker.internal:host-gateway{{#workers}}
+
+    {{.}}-worker:
+        build: ./
+        volumes:
+            - ./:/var/www
+        hostname: {{.}}-worker-development
+        networks:
+            - {{docker.network}}
+        command:
+            - "./bin/console"
+            - "messenger:consume"
+            - "{{.}}"
+            - "-vv"
+        restart: always{{/workers}}
+
+networks:
+    {{docker.network}}:
+        driver: bridge

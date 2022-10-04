@@ -34,7 +34,8 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.1.*",
         "symfony/runtime": "6.1.*",
-        "symfony/yaml": "6.1.*"
+        "symfony/yaml": "6.1.*"{{#workers}},
+        "symfony/messenger": "6.1.*"{{/workers}}
     },
     "require-dev": {
         "arnedesmedt/api-platform-event-engine-server-stub": "dev-master",
