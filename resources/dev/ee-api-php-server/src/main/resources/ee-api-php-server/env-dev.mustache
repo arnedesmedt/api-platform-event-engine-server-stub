@@ -1,0 +1,11 @@
+APP_NAME='{{applicationName}}'
+APP_DESCRIPTION='{{description}}'
+APP_VERSION='dev'
+
+OPEN_API_NAME='{{openApi.name}}'
+OPEN_API_URL='{{openApi.url}}'
+OPEN_API_EMAIL='{{openApi.email}}'
+
+DATABASE_URL='postgresql://{{docker.database.username}}:{{docker.database.password}}@db:5432/{{docker.database.name}}?serverVersion=14&charset=utf8'
+PDO_DSN='pgsql:host=db;port=5432;dbname={{docker.database.name}};user={{docker.database.username}};password={{docker.database.password}}'
+CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|)(:[0-9]+)?'

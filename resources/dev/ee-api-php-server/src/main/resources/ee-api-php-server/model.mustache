@@ -35,5 +35,10 @@ final class {{classname}} implements JsonSchemaAwareRecord
             '{{name}}' => {{^items.complexType}}'{{items.dataType}}'{{/items.complexType}}{{#items.complexType}}{{{.}}}::class{{/items.complexType}},{{/isArray}}{{/vars}}
         ];
     }
+
+    private static function __allowNestedSchema(): bool
+    {
+        return {{#allVars}}{{#isCircularReference}}false{{/isCircularReference}}{{/allVars}};
+    }
 }
 {{/model}}{{/models}}

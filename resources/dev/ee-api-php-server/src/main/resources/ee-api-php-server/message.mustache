@@ -13,7 +13,11 @@ use ADS\Bundle\EventEngineBundle\Command\DefaultControllerCommand;{{/vendorExten
 use ADS\Bundle\EventEngineBundle\Command\DefaultAggregateCommand;{{/vendorExtensions.isAggregateCommand}}
 use Symfony\Component\HttpFoundation\Request;
 
-final class {{classVarName}} implements ApiPlatformMessage, HasResponses{{#vendorExtensions.isQuery}}, Query{{/vendorExtensions.isQuery}}{{#vendorExtensions.isControllerCommand}}, ControllerCommand{{/vendorExtensions.isControllerCommand}}{{#vendorExtensions.isAggregateCommand}}, AggregateCommand{{/vendorExtensions.isAggregateCommand}}
+{{#notes}}
+/**
+ * {{.}}
+ */
+{{/notes}}final class {{classVarName}} implements ApiPlatformMessage, HasResponses{{#vendorExtensions.isQuery}}, Query{{/vendorExtensions.isQuery}}{{#vendorExtensions.isControllerCommand}}, ControllerCommand{{/vendorExtensions.isControllerCommand}}{{#vendorExtensions.isAggregateCommand}}, AggregateCommand{{/vendorExtensions.isAggregateCommand}}
 {
     use DefaultApiPlatformMessage;
     use DefaultResponses;
@@ -21,8 +25,11 @@ final class {{classVarName}} implements ApiPlatformMessage, HasResponses{{#vendo
     use OperationNameIsMessageName;
 
 {{#pathParams}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{paramName}};
-{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}    /** @var array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}> ${{name}} */
-{{/isArray}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{name}};
+{{/pathParams}}{{#bodyParams.0}}{{#vars}}{{#isArray}}    /**{{/isArray}}{{^isArray}}{{#example}}    /**{{/example}}{{/isArray}}{{#isArray}}
+     * @var array<{{#items.complexType}}{{.}}{{/items.complexType}}{{^items.complexType}}{{items.dataType}}{{/items.complexType}}> ${{name}}
+{{/isArray}}{{#example}}
+     * @example {{.}}
+{{/example}}{{#isArray}}     */{{/isArray}}{{^isArray}}{{#example}}     */{{/example}}{{/isArray}}    private {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}} ${{name}};
 {{/vars}}{{/bodyParams.0}}{{#pathParams}}
     public function {{paramName}}(): {{#isArray}}array{{/isArray}}{{^isArray}}{{#complexType}}{{.}}{{/complexType}}{{^complexType}}{{dataType}}{{/complexType}}{{/isArray}}
     {

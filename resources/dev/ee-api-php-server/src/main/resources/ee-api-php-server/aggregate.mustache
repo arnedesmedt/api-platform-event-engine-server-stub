@@ -21,7 +21,7 @@ final class {{classVarName}} implements AggregateRoot, DeletableState
     /**
      * @return class-string<JsonSchemaAwareRecord>
      */
-    protected static function stateClass(): string
+    public static function stateClass(): string
     {
         return {{{bodyParams.0.content.application/json.schema.complexType}}}::class;
     }{{/bodyParams.0.content.application/json.schema.vendorExtensions.x-aggregate-state}}

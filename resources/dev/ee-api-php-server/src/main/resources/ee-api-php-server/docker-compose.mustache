@@ -17,8 +17,6 @@ services:
 
     init:
         build: ./
-        env_file:
-            - .env
         volumes:
             - ./:/var/www
         depends_on:

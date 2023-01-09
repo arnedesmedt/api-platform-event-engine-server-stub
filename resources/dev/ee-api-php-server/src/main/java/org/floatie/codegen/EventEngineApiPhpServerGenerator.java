@@ -1,4 +1,4 @@
-package org.floatie.codegen;
+package org.eventEngineApiPhpServer.codegen;
 
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.languages.AbstractPhpCodegen;
@@ -40,7 +40,14 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         supportingFiles.add(new SupportingFile("phpstan.mustache", "", "phpstan.neon"));
         supportingFiles.add(new SupportingFile("phpcs.mustache", "", "phpcs.xml"));
         supportingFiles.add(new SupportingFile("docker-compose.mustache", "", "docker-compose.yml"));
-        supportingFiles.add(new SupportingFile("docker.mustache", "", "DockerFile"));
+        supportingFiles.add(new SupportingFile("docker.mustache", "", "Dockerfile"));
+        supportingFiles.add(new SupportingFile("env-dev.mustache", "", ".env.dev"));
+        supportingFiles.add(new SupportingFile("api-platform-event-engine-config.mustache", "", "config/packages/ads_api_platform_event_engine.yaml"));
+        supportingFiles.add(new SupportingFile("event-engine-config.mustache", "", "config/packages/ads_event_engine.yaml"));
+        supportingFiles.add(new SupportingFile("api-platform-config.mustache", "", "config/packages/api_platform.yaml"));
+        supportingFiles.add(new SupportingFile("env-dev.mustache", "", ".env.dev"));
+        supportingFiles.add(new SupportingFile("env-dev.mustache", "", ".env.dev"));
+        supportingFiles.add(new SupportingFile("database-test.mustache", "", "database/docker-scripts/database-test.sql"));
 
         // Set template dir to ee-api-php-server
         this.setTemplateDir(EventEngineApiPhpServerGenerator.GENERATOR_NAME);
@@ -48,6 +55,8 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
 
         this.setSrcBasePath("src");
         this.setParameterNamingConvention("camelCase");
+
+        additionalProperties.put(CodegenConstants.INVOKER_PACKAGE, "App");
     }
 
     public void processOpts() {
@@ -158,6 +167,8 @@ public class EventEngineApiPhpServerGenerator extends AbstractPhpCodegen impleme
         Object xFolder = vendorExtensions.get("x-folder");
         String folder = xFolder != null ? xFolder + "\\" : "";
         property.setComplexType("\\" + modelPackage + "\\" + aggregate + folder + property.getComplexType());
+        String dataType = property.getDatatype().substring(property.getDatatype().lastIndexOf("\\") + 1);
+        property.setDatatype(dataType);
 
         return property;
     }

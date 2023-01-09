@@ -1,0 +1,40 @@
+api_platform:
+    title: '%env(string:APP_NAME)%'
+    description: '%env(string:APP_DESCRIPTION)%'
+    version: '%env(string:APP_VERSION)%'
+
+    path_segment_name_generator: api_platform.path_segment_name_generator.dash
+
+    enable_swagger_ui: false
+    enable_re_doc: false
+
+    defaults:
+        pagination_client_items_per_page: true
+
+    collection:
+        pagination:
+            items_per_page_parameter_name: items-per-page
+
+    mapping:
+        paths: ['%kernel.project_dir%/src/Domain/Entity']
+
+    name_converter: serializer.name_converter.camel_case_to_snake_case
+
+    swagger:
+        versions: [3]
+
+    openapi:
+        contact:
+            name: '%env(string:OPEN_API_NAME)%'
+            url: '%env(string:OPEN_API_URL)%'
+            email: '%env(string:OPEN_API_EMAIL)%'
+
+    formats:
+        json: ['application/json']
+        jsonld: ['application/ld+json']
+        jsonhal: ['application/hal+json']
+    patch_formats:
+        json: ['application/merge-patch+json']
+        jsonld: ['application/ld+json']
+        jsonhal: ['application/hal+json']
+
